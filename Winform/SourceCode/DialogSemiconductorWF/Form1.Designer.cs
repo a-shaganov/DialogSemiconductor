@@ -270,6 +270,7 @@ namespace DialogSemiconductorWF
             this.Controls.Add(this.generalMenu);
             this.MinimumSize = new System.Drawing.Size(500, 400);
             this.Name = "mainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainForm_FormClosing);
             this.generalMenu.ResumeLayout(false);

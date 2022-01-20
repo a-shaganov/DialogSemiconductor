@@ -1,8 +1,5 @@
-﻿using CommonData.Enums;
-using CommonData.Slots;
+﻿using CommonData.Slots;
 using CommonData.Temperatures;
-using CommonDictionary.Attributes;
-using CommonDictionary.Helpers;
 using DialogSemiconductorWF.Components;
 using DialogSemiconductorWF.EventArguments;
 using DialogSemiconductorWF.Helpers;
@@ -10,16 +7,9 @@ using DialogSemiconductorWF.Model;
 using DialogSemiconductorWF.Properties;
 using DialogSemiconductorWF.Settings;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DialogSemiconductorWF
@@ -89,12 +79,6 @@ namespace DialogSemiconductorWF
         /// </summary>
         private void InitializeBindinngs()
         {
-            this.Height = (Int32)SettingsManager.Instance.General.MFHeight;
-            this.Width = (Int32)SettingsManager.Instance.General.MFWidth;
-            this.Top = (Int32)SettingsManager.Instance.General.MFTop;
-            this.Left = (Int32)SettingsManager.Instance.General.MFLeft;
-            this.WindowState = SettingsManager.Instance.General.MFState;
-
             BindingModel = new DataBindingModel();
             BindingModel.RestoreInformation();
             BindingModel.ChangedSlotsEventHandler += BindingModel_ChangedSlotsEventHandler;
@@ -134,6 +118,10 @@ namespace DialogSemiconductorWF
             lbTemperatures.MouseUp += LbTemperatures_MouseUp;
 
             tbAddTemperature.DataBindings.Add("Text", BindingModel, "Temperature", false, DataSourceUpdateMode.OnPropertyChanged);
+
+            this.Height = (Int32)SettingsManager.Instance.General.MFHeight;
+            this.Width = (Int32)SettingsManager.Instance.General.MFWidth;
+            this.Location = new Point((Int32)SettingsManager.Instance.General.MFLeft, (Int32)SettingsManager.Instance.General.MFTop);
         }
 
         /// <summary>
@@ -218,9 +206,9 @@ namespace DialogSemiconductorWF
             slotsSelector.SuspendLayout();
             slotsSelector.Visible = false;
 
-            if (slotsSelector.Controls.Count > 0)
+            if (!BindingModel.ExecuteCheckSlots && (slotsSelector.Controls.Count > 0))
             {
-                foreach(Object obj in slotsSelector.Controls)
+                foreach (Object obj in slotsSelector.Controls)
                 {
                     if (!(obj is SlotPanel))
                         continue;
@@ -243,9 +231,12 @@ namespace DialogSemiconductorWF
                     {
                         SlotPanel slotPanel = new SlotPanel(slot);
                         slotPanel.Location = new Point(positionSlot, positionRow);
-                        slotPanel.MouseDown += SlotPanel_MouseDown;
-                        slotPanel.MouseMove += SlotPanel_MouseMove;
-                        slotPanel.MouseUp += SlotPanel_MouseUp;
+                        if (!BindingModel.ExecuteCheckSlots)
+                        {
+                            slotPanel.MouseDown += SlotPanel_MouseDown;
+                            slotPanel.MouseMove += SlotPanel_MouseMove;
+                            slotPanel.MouseUp += SlotPanel_MouseUp;
+                        }
 
                         slotsSelector.Controls.Add(slotPanel);
 
@@ -550,7 +541,6 @@ namespace DialogSemiconductorWF
             SettingsManager.Instance.General.MFWidth = this.Width;
             SettingsManager.Instance.General.MFTop = this.Top;
             SettingsManager.Instance.General.MFLeft = this.Left;
-            SettingsManager.Instance.General.MFState = this.WindowState;
             
             SettingsManager.Instance.Save();
             Thread.Sleep(100);
