@@ -1,0 +1,19 @@
+﻿<Application x:Class="DialogSemiconductor.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DialogSemiconductor">
+    <Application.Resources>
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+
+                <ResourceDictionary Source="pack://application:,,,/CommonDictionary;component/Dictionaries/Brushes.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/CommonDictionary;component/Components/Styles/MixedButtonStyle.xaml" />
+
+                <ResourceDictionary Source="Dictionaries/Converters.xaml"/>
+                
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        
+    </Application.Resources>
+</Application>

@@ -1,0 +1,346 @@
+﻿<Window x:Class="DialogSemiconductor.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:enum="clr-namespace:CommonData.Enums;assembly=CommonData"
+        xmlns:beh="clr-namespace:DialogSemiconductor.Behaviors"
+        xmlns:res="clr-namespace:DialogSemiconductor.Properties"
+        xmlns:comp="clr-namespace:CommonDictionary.Components;assembly=CommonDictionary"
+        xmlns:sett="clr-namespace:DialogSemiconductor.Settings"
+        xmlns:local="clr-namespace:DialogSemiconductor.Views"
+        mc:Ignorable="d"
+        Height="{Binding General.MFHeight, Source={x:Static sett:SettingsManager.Instance}, Mode=TwoWay}"
+        Width="{Binding General.MFWidth, Source={x:Static sett:SettingsManager.Instance}, Mode=TwoWay}"
+        Left="{Binding General.MFLeft, Source={x:Static sett:SettingsManager.Instance}, Mode=TwoWay}"
+        Top="{Binding General.MFTop, Source={x:Static sett:SettingsManager.Instance}, Mode=TwoWay}"
+        WindowState="{Binding General.MFState, Source={x:Static sett:SettingsManager.Instance}, Mode=TwoWay}"
+        Title="{x:Static res:Resources.Title_Programm}" MinHeight="550" MinWidth="900"
+        beh:WindowClosingBehaviour.Closing="{Binding ClosingProgrammCommand}">
+    <Window.Resources>
+
+        <!-- Стиль иконки в контекстном меню -->
+        <Style x:Key="MenuIconStyle" TargetType="comp:MaskedImage">
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Width" Value="16"/>
+            <Setter Property="Stretch" Value="Fill"/>
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
+        </Style>
+
+    </Window.Resources>
+    <Grid>
+        <!-- Общая разделительная панель -->
+        <Grid.RowDefinitions>
+            <!-- Линия отвечающая за настройку и вы типа и количества слотов -->
+            <RowDefinition Height="40"/>
+            <!-- Линия отвечающая за отображения других настроек -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Панель кнопок программы -->
+        <ToolBarTray Grid.Row="0">
+            <ToolBarTray.Style>
+                <Style TargetType="ToolBarTray">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ExecuteCheckSlots}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ToolBarTray.Style>
+            <ToolBar >
+                <!-- Кнопка удаления температуры -->
+                <comp:MixedButton Command="{Binding DeleteThemperatureCommand}" Icon="/Images/Button/Delete.png"
+                                  ToolTip="{x:Static res:Resources.Btn_DeleteSelectedTemperature}"/>
+                <!-- Разделитель -->
+                <Separator Margin="5,0,5,0"/>
+                <!-- Кнопка перемещения температуры вверх -->
+                <comp:MixedButton Command="{Binding MoveUpTemperatureCommand}" Icon="/Images/Button/Up.png"
+                                  ToolTip="{x:Static res:Resources.Btn_MoveUpSelectedTemperature}"/>
+                <!-- Кнопка перемещения температуры вниз -->
+                <comp:MixedButton Command="{Binding MoveDownTemperatureCommand}" Icon="/Images/Button/Down.png"
+                                  ToolTip="{x:Static res:Resources.Btn_MoveDownSelectedTemperature}"/>
+                <!-- Разделитель -->
+                <Separator Margin="5,0,5,0"/>
+                <!-- Настройка типа и количества слотов -->
+                <ComboBox Grid.Row="0" Width="150" Height="23"
+                          ItemsSource="{Binding Converter={StaticResource EnumValuesEnumerator}, ConverterParameter={x:Type enum:MicroSlotTypes}}"
+                          SelectedItem="{Binding MicroSlots, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                       Text="{Binding Converter={StaticResource EnumDescriptionExtractor}}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <!-- Разделитель -->
+                <Separator Margin="5,0,5,0"/>
+                <!-- Кнопка выбора всех слотов -->
+                <comp:MixedButton Command="{Binding SelectAllSlotsCommand}" CommandParameter="true"
+                                  Icon="/Images/Button/Select.png"
+                                  ToolTip="{x:Static res:Resources.Btn_SelectAllSlots}"/>
+                <!-- Кнопка снятия выбора всех слотов -->
+                <comp:MixedButton Command="{Binding SelectAllSlotsCommand}" CommandParameter="false"
+                                  Icon="/Images/Button/Deselect.png"
+                                  ToolTip="{x:Static res:Resources.Btn_DeselectAllSlots}"/>
+                <!-- Разделитель -->
+                <Separator Margin="5,0,5,0"/>
+                <!-- Кнопка выполнения проверки слотов -->
+                <comp:MixedButton Command="{Binding ExecuteProgrammCommand}" Icon="/Images/Button/Execute.png"
+                                  ToolTip="{x:Static res:Resources.Btn_ExecuteProgramm}"/>
+            </ToolBar>
+        </ToolBarTray>
+
+        <ToolBarTray Grid.Row="0">
+            <ToolBarTray.Style>
+                <Style TargetType="ToolBarTray">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ExecuteCheckSlots}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ToolBarTray.Style>
+            <ToolBar >
+                <!-- Кнопка выполнения проверки слотов -->
+                <comp:MixedButton Command="{Binding ExecuteProgrammCommand}" Icon="/Images/Button/Back.png"
+                                  ToolTip="{x:Static res:Resources.Btn_BackToSettings}"/>
+            </ToolBar>
+        </ToolBarTray>
+
+        <!-- Панель отвечающая за настройку температур и выбора слотов --> 
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <!-- Линия отвечающая за настройку температуру -->
+                <ColumnDefinition Width="190"/>
+                <!-- Разделитель -->
+                <ColumnDefinition Width="3"/>
+                <!-- Линия отвечающая за выбор слотов -->
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Панель за настройку температуры -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <!-- Линия отвечающая за добавление температуры -->
+                    <RowDefinition>
+                        <RowDefinition.Style>
+                            <Style TargetType="RowDefinition">
+                                <Setter Property="Height" Value="70"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ExecuteCheckSlots}" Value="True">
+                                        <Setter Property="Height" Value="0"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </RowDefinition.Style>
+
+                    </RowDefinition>
+                    <!-- Список температур -->
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Панель добавления температуры -->
+                <Border Grid.Row="0" Background="AliceBlue" BorderThickness="1" BorderBrush="Black" Margin="2">
+                    <StackPanel Orientation="Vertical">
+                        <!-- Описание поля -->
+                        <TextBlock Text="{x:Static res:Resources.Field_Temperature}" VerticalAlignment="Center"
+                                   HorizontalAlignment="Center" Margin="2,0,2,0"/>
+                        <!-- Температура -->
+                        <TextBox Text="{Binding Temperature, UpdateSourceTrigger=PropertyChanged}" Margin="2"
+                                 beh:TextBoxCheckNumber.CheckNumeric="true"
+                                 beh:TextBoxCheckNumber.Command="{Binding CheckTextCommand}"/>
+                        <!-- Кнопка добавления температуры -->
+                        <Button Content="{x:Static res:Resources.Btn_AddTemperature}"
+                                Command="{Binding AddThemperatureCommand}" Margin="2,0,2,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Список температур -->
+                <ListView Grid.Row="1" ItemsSource="{Binding Temperatures, Mode=OneWay}"
+                          SelectedItem="{Binding SelectedTemperature, Mode=TwoWay}" Focusable="False"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="2,0,2,2">
+                    <ListView.Resources>
+                        <!-- Стиль строки для элемента -->
+                        <Style TargetType="ListViewItem">
+                            <!-- Запись в поле для подальшего использования команд в строках -->
+                            <Setter Property="Tag" Value="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=ListView}}" />
+                            <!-- Контекстное меню списка -->
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+
+                                        <!-- Очистка фильтра -->
+                                        <MenuItem Header="{x:Static res:Resources.Btn_DeleteSelectedTemperature}"
+                                                  Command="{Binding PlacementTarget.Tag.DeleteThemperatureMenuCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                            <MenuItem.Icon>
+                                                <comp:MaskedImage Source="/Images/Button/Delete.png" Style="{StaticResource MenuIconStyle}"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                            <!-- Растянуть по ширине -->
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <!-- Установить по центру -->
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <!-- Установить цвет текста -->
+                            <Setter Property="Foreground" Value="{StaticResource DefaultItemForeground}"/>
+                            <!-- Шаблон элемента -->
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                        <!-- Границы и заливка элемента -->
+                                        <Border x:Name="border" Margin="1" Padding="2" CornerRadius="0"
+                                                BorderThickness="1" Background="{StaticResource DefaultItemBackground}"
+                                                beh:DragAndDropBehaviour.IsDragSource="True"
+                                                beh:DragAndDropBehaviour.IsDropDestination="True"
+                                                beh:DragAndDropBehaviour.AttachedData="{Binding}"
+                                                beh:DragAndDropBehaviour.CatchDroppingCommand="{Binding DataContext.CatchDroppingTemperatureCommand,
+                                                     RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}">
+                                            <GridViewRowPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                        </Border>
+                                        <!-- Тригеры при срабатывании -->
+                                        <ControlTemplate.Triggers>
+                                            <!-- Тригер при выборе элемента -->
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="LightGray"/>
+                                                <Setter TargetName="border" Property="BorderThickness" Value="1"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="DarkGray"/>
+                                            </Trigger>
+                                            <!-- Тригер при наведении курсора на элемент -->
+                                            <Trigger Property="IsMouseOver" Value="true">
+                                                <Setter TargetName="border" Property="Background" Value="#5426A0DA"/>
+                                                <Setter TargetName="border" Property="BorderThickness" Value="1"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#FF26A0DA"/>
+                                            </Trigger>
+                                            <!-- Тригер при наведении курсора на выбраный элемент -->
+                                            <MultiTrigger>
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="IsMouseOver" Value="True"/>
+                                                    <Condition Property="IsSelected" Value="True"/>
+                                                </MultiTrigger.Conditions>
+                                                <Setter TargetName="border" Property="Background" Value="#2E0080FF"/>
+                                                <Setter TargetName="border" Property="BorderThickness" Value="1"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#99006CD9"/>
+                                            </MultiTrigger>
+
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                    </ListView.Resources>
+                    <ListView.View>
+                        <GridView AllowsColumnReorder="False">
+
+                            <!-- Поле для отображения строки запуска файла -->
+                            <GridViewColumn Header="{x:Static res:Resources.Field_Temperature}" Width="175">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Temperature}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+            </Grid>
+            
+            <!-- Выбор слотов -->
+            <ItemsControl Grid.Column="2" ItemsSource="{Binding Slots.Rows}" Focusable="True" Margin="0,2,2,2"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          ScrollViewer.CanContentScroll="false"
+                          beh:MouseLeftButtonUpBehaviour.Command="{Binding DataContext.MouseUpCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}">
+                <ItemsControl.Template>
+                    <ControlTemplate>
+                        <ScrollViewer Padding="{TemplateBinding Padding}" Background="AliceBlue"
+                                      HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                        <!-- Отображение линий содержащих слоты -->
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding Slots}" Focusable="True"
+                                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                      ScrollViewer.CanContentScroll="false"
+                                      beh:MouseLeftButtonUpBehaviour.Command="{Binding DataContext.MouseUpCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}">
+                            <ItemsControl.Template>
+                                <ControlTemplate>
+                                    <ItemsPresenter />
+                                </ControlTemplate>
+                            </ItemsControl.Template>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <!-- Отображение слота -->
+                                    <Border Width="20" Height="20" Margin="1" BorderBrush="Black"
+                                            beh:MouseLeftButtonUpBehaviour.Command="{Binding DataContext.MouseUpCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                            beh:MouseLeftButtonUpBehaviour.CommandParameter="{Binding}"
+                                            beh:MouseMoveBehaviour.Command="{Binding DataContext.MouseMoveCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                            beh:MouseMoveBehaviour.CommandParameter="{Binding}"
+                                            beh:MouseLeftButtonDownBehaviour.Command="{Binding DataContext.MouseDownCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                            beh:MouseLeftButtonDownBehaviour.CommandParameter="{Binding}"
+                                            ToolTip="{Binding ErrorDescription}">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="BorderThickness" Value="1"/>
+                                                <Setter Property="Background" Value="LightGray"/>
+                                                <Style.Triggers>
+                                                    <!-- Отображение что слот выбран -->
+                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                        <Setter Property="BorderThickness" Value="2"/>
+                                                        <Setter Property="Background" Value="White"/>
+                                                    </DataTrigger>
+                                                    <!-- Отображение что слот выделен для выбора -->
+                                                    <DataTrigger Binding="{Binding IsPrepared}" Value="True">
+                                                        <Setter Property="Background" Value="LightGreen"/>
+                                                    </DataTrigger>
+                                                    <!-- Отображение что слот после тестирования имее ошибку -->
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding HasError}" Value="True"/>
+                                                            <Condition Binding="{Binding CheckEnd}" Value="True"/>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Background" Value="Red"/>
+                                                    </MultiDataTrigger>
+                                                    <!-- Отображение что слот после тестирования с ним все впорядке -->
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding HasError}" Value="False"/>
+                                                            <Condition Binding="{Binding CheckEnd}" Value="True"/>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Background" Value="Green"/>
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+
+                                    </Border>
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </Grid>
+    </Grid>
+</Window>
